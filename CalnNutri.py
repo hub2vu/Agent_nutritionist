@@ -7,6 +7,7 @@ import hashlib
 import base64
 import urllib.parse
 import requests
+from datetime import datetime  # 시간 기록을 위해 추가
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -322,6 +323,39 @@ def main():
     print(f"   ● 당류    : {total['sugar']:,.1f} g")
     print(f"   ● 나트륨  : {total['sodium']:,.0f} mg")
     print("="*70)
+
+    # ----------------------------------------------------------------------------
+    # 5. 파일 로그 저장 (사용자 요청 추가 기능)
+    # ----------------------------------------------------------------------------
+    try:
+        log_dir = "./log"
+        if not os.path.exists(log_dir):
+            os.makedirs(log_dir)
+            
+        file_path = os.path.join(log_dir, "nutrition.txt")
+        
+        # 현재 시간
+        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # 저장할 문자열 생성
+        log_content = f"[{now_str}]\n"
+        log_content += f"   ● 칼로리 : {total['calories']:,.1f} kcal\n"
+        log_content += f"   ● 탄수화물: {total['carbohydrate']:,.1f} g\n"
+        log_content += f"   ● 단백질  : {total['protein']:,.1f} g\n"
+        log_content += f"   ● 지방    : {total['fat']:,.1f} g\n"
+        log_content += f"   ● 당류    : {total['sugar']:,.1f} g\n"
+        log_content += f"   ● 나트륨  : {total['sodium']:,.0f} mg\n"
+
+        # 파일이 이미 존재하면 앞에 2칸 줄바꿈(\n\n) 추가
+        prefix = "\n\n" if os.path.exists(file_path) else ""
+        
+        with open(file_path, "a", encoding="utf-8") as f:
+            f.write(prefix + log_content)
+            
+        print(f"📄 결과가 '{file_path}'에 저장되었습니다.")
+        
+    except Exception as e:
+        print(f"⚠️ 로그 저장 실패: {e}")
 
 if __name__ == "__main__":
     main()
