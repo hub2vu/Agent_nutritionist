@@ -19,7 +19,13 @@ import json
 import re
 from dotenv import load_dotenv
 from openai import OpenAI
+from datetime import datetime, timezone, timedelta
 
+KST = timezone(timedelta(hours=9))
+
+def get_today_str():
+    # 예: "2025-12-04 11:32:10 KST"
+    return datetime.now(KST).strftime("%Y-%m-%d %H:%M:%S %Z")
 
 # =============================================================================
 # 환경 설정 / OpenAI 클라이언트
@@ -56,32 +62,25 @@ def handle_profile_setup(params: dict):
 
 
 def handle_meal_record(params: dict):
-    """
-    식단 기록 핸들러
-    - tool.calnnutri.record_nutrition 사용
-    - params 에 "meal_description" 이 있으면 그대로 전달
-      없으면 사용자에게 다시 입력 받음
-    """
-    print("\n📝 식단 기록")
-    print("=" * 70)
-
     from tool.calnnutri import record_nutrition
 
-    meal_desc = params.get("meal_description", "").strip()
+    meal_desc = params.get("meal_description", "")
+    meal_desc = meal_desc.strip() if isinstance(meal_desc, str) else ""
 
     if not meal_desc:
-        print("무엇을 드셨나요?")
-        meal_desc = input("입력 (예: 현미밥 200g이랑 닭가슴살 100g 먹었어): ").strip()
+        # 여기서 직접 물어보지 말고, LLM에게 "파라미터 부족"이라는 Observation을 돌려줌
+        msg = "meal_record 도구를 사용하려면 meal_description 파라미터가 필요합니다."
+        print("❗ " + msg)
+        return msg
 
     try:
         result = record_nutrition(meal_desc)
-        # record_nutrition 이 문자열을 반환하지 않을 수도 있으니 안전하게 처리
-        msg = result if isinstance(result, str) and result.strip() else "식단 기록이 완료되었습니다."
+        msg = "식단 기록이 완료되었습니다."
         print("\n✅ " + msg)
         return msg
     except Exception as e:
         err = f"식단 기록 중 오류 발생: {e}"
-        print(f"❌ {err}")
+        print("❌ " + err)
         return err
 
 
@@ -183,9 +182,15 @@ def run_react_agent_once(user_input: str):
     Thought → Action → Observation → ... → Final Answer
     루프를 수행하는 에이전트.
     """
-
+    today_str = get_today_str()
     system_prompt = """
 너는 여러 도구를 사용해 사용자의 영양 관리 목표를 달성하는 AI 에이전트이다.
+
+중요: 지금 이 코드가 실행되는 시점의 실제 날짜와 시간은
+"{today_str}" 이다. (대한민국 표준시, KST 기준)
+
+사용자의 질문에서 '오늘', '지금', '어제', '이번 주' 등
+상대적인 날짜 표현이 나오면 반드시 위 날짜를 기준으로 해석해야 한다.
 
 사용할 수 있는 도구 목록:
 
@@ -194,7 +199,7 @@ def run_react_agent_once(user_input: str):
    - 내부 구현: tool.bmrcal.main()
 
 2. meal_record
-   - 설명: 사용자가 먹은 음식(텍스트 설명)을 받아 영양 정보를 기록하는 도구
+   - 설명: 사용자가 **이미 먹은 구체적인 음식**(텍스트 설명)을 받아 영양 정보를 기록하는 도구
    - 내부 구현: tool.calnnutri.record_nutrition(meal_description)
    - Action Input 예시: {"meal_description": "현미밥 200g이랑 닭가슴살 100g 먹었어"}
 
