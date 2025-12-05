@@ -141,5 +141,22 @@ python app.py
 
 리포트만 테스트하고 싶다면:
 
+
 python tool/reporter.py daily
 python tool/reporter.py weekly
+
+
+
+<img width="2005" height="1244" alt="스크린샷 2025-12-05 225432" src="https://github.com/user-attachments/assets/5a596383-60be-46d5-808e-ae71dd5e5a67" />
+
+<img width="2133" height="1121" alt="스크린샷 2025-12-05 225422" src="https://github.com/user-attachments/assets/2f78f170-cb50-4ad1-8d12-cd391e11b9c3" />
+
+
+<img width="2131" height="1077" alt="스크린샷 2025-12-05 225413" src="https://github.com/user-attachments/assets/3b57a22d-495e-4ba1-bd3c-3dda8af8de51" />
+
+
+<img width="2142" height="984" alt="스크린샷 2025-12-05 225355" src="https://github.com/user-attachments/assets/8e350324-099f-420c-9bb7-74c361a2919e" />
+
+
+<img width="1988" height="923" alt="스크린샷 2025-12-05 225343" src="https://github.com/user-attachments/assets/3873c1ff-638d-40f0-864c-3f612422701a" />
+
