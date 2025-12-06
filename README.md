@@ -178,6 +178,10 @@ python main_react.py
 ```bash
 python app.py
 ```
+
+
+.env : openai API, Fatsecret API
+환경변수 : Tavily API
 ---
 
 ## 🧪 리포트만 개별 테스트하고 싶다면:
