@@ -169,11 +169,15 @@ project_root/
 pip install -r requirements.txt
 ```
 
-### 2. 메인 에이전트 실행
+### 2. 메인 에이전트
 ```bash
-python main.py
+python main_react.py
 ```
 
+### 3. 프로그램 실행(웹 UI)
+```bash
+python app.py
+```
 ---
 
 ## 🧪 리포트만 개별 테스트하고 싶다면:
